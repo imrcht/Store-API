@@ -7,7 +7,9 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
 	const products = await Product.find();
 
 	if (!products) {
-		return errorResponse(`Resource not found`, 404);
+		return next(
+			new errorResponse(`Resource not found of id ${req.params.id}`, 404),
+		);
 	} else {
 		res.status(201).json({
 			success: true,
@@ -24,7 +26,7 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 	// check for listed product
 	const listedProduct = await Product.find({ user: req.user.id });
 
-	if ((listedProduct.length = 10 && req.user.role != "admin")) {
+	if (listedProduct.length === 10 && req.user.role != "admin") {
 		return next(
 			new errorResponse(
 				`The user with name ${req.user.name} has already listed 10 products`,
@@ -44,7 +46,9 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 	const product = await Product.findById(req.params.id);
 	console.log(req.params.id);
 	if (!product) {
-		return errorResponse(`Resource not found of id ${req.params.id}`, 404);
+		return next(
+			new errorResponse(`Resource not found of id ${req.params.id}`, 404),
+		);
 	} else {
 		res.status(201).json({
 			success: true,
@@ -54,14 +58,31 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 });
 
 exports.updateProduct = asyncHandler(async (req, res, next) => {
-	const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+	let product = await Product.findById(req.params.id);
+
+	if (!product) {
+		return next(
+			new errorResponse(`Resource not found of id ${req.params.id}`, 404),
+		);
+	}
+	// making sure that only the product seller or admin can update product details
+	if (
+		product.seller.toString() !== req.user.id &&
+		req.user.role !== "admin"
+	) {
+		return next(
+			new errorResponse(
+				`${req.user.name} is not allowed to update this product details`,
+				401,
+			),
+		);
+	}
+
+	// Update Product
+	product = await Product.findByIdAndUpdate(req.params.id, req.body, {
 		runValidators: true,
 		new: true,
 	});
-
-	if (!product) {
-		return errorResponse(`Resource not found of id ${req.params.id}`, 404);
-	}
 
 	res.json({
 		success: true,
@@ -69,13 +90,35 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 	});
 });
 
-exports.deleteProduct = asyncHandler((req, res, next) => {
+exports.deleteProduct = asyncHandler(async (req, res, next) => {
+	let product = await Product.findById(req.params.id);
+
+	if (!product) {
+		return next(
+			new errorResponse(`Resource not found of id ${req.params.id}`, 404),
+		);
+	}
+	// making sure that only the product seller or admin can delete product details
+	if (
+		product.seller.toString() !== req.user.id &&
+		req.user.role !== "admin"
+	) {
+		return next(
+			new errorResponse(
+				`${req.user.name} is not allowed to delete this product details`,
+				401,
+			),
+		);
+	}
+
+	// Delete the product
 	Product.deleteOne({ _id: req.params.id }, (err) => {
 		if (err) {
 			next(err);
 		} else {
 			res.json({
 				success: true,
+				message: `Product deleted by the user ${req.user.name} `,
 			});
 		}
 	});

@@ -6,14 +6,13 @@ const secrets = require("../secrets");
 
 exports.protect = asyncHandler(async (req, res, next) => {
 	let token;
-	console.log(req.cookie);
 	if (
 		req.headers.authorization &&
 		req.headers.authorization.startsWith("Bearer")
 	) {
 		token = req.headers.authorization.split(" ")[1];
-	} else if (req.cookie.token) {
-		token = req.cookie.token;
+	} else if (req.cookies.token) {
+		token = req.cookies.token;
 	}
 
 	// Make sure token is present
