@@ -18,6 +18,20 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
 });
 
 exports.createProduct = asyncHandler(async (req, res, next) => {
+	// Add user to body
+	req.body.seller = req.user.id;
+
+	// check for listed product
+	const listedProduct = await Product.find({ user: req.user.id });
+
+	if ((listedProduct.length = 10 && req.user.role != "admin")) {
+		return next(
+			new errorResponse(
+				`The user with name ${req.user.name} has already listed 10 products`,
+			),
+		);
+	}
+
 	const product = await Product.create(req.body);
 
 	res.status(201).json({

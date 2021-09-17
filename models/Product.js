@@ -36,9 +36,9 @@ const ProductSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 	cost: Number,
-	Seller: {
-		type: String,
-		required: [true, "please add a Seller"],
+	seller: {
+		type: mongoose.Schema.ObjectId,
+		ref: "User",
 		trim: true,
 		maxlength: [50, "Seller name cannot be more than of 50 characters"],
 	},
