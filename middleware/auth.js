@@ -6,16 +6,15 @@ const secrets = require("../secrets");
 
 exports.protect = asyncHandler(async (req, res, next) => {
 	let token;
-
+	console.log(req.cookie);
 	if (
 		req.headers.authorization &&
 		req.headers.authorization.startsWith("Bearer")
 	) {
 		token = req.headers.authorization.split(" ")[1];
+	} else if (req.cookie.token) {
+		token = req.cookie.token;
 	}
-	// else if (req.cookie.token) {
-	// 	token = req.cookie.token;
-	// }
 
 	// Make sure token is present
 	if (!token) {
@@ -35,11 +34,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
 		req.user = await User.findById(decoded.id);
 
-		res.status(200).json({
-			success: true,
-			user: req.user,
-		});
-
 		next();
 	} catch (err) {
 		return next(
@@ -50,3 +44,20 @@ exports.protect = asyncHandler(async (req, res, next) => {
 		);
 	}
 });
+
+// specific role can perform specific operations
+exports.authorize = (...roles) => {
+	return (req, res, next) => {
+		console.log(roles);
+		console.log(req.user.role);
+		if (!roles.includes(req.user.role)) {
+			return next(
+				new errorResponse(
+					`User of role ${req.user.role} is not authorized to perform this action`,
+					403,
+				),
+			);
+		}
+		next();
+	};
+};

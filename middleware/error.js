@@ -14,10 +14,10 @@ function errorHandler(err, req, res, next) {
 		const message = `Resource not found of id ${err.value}`;
 		error = new errorResponse(message, 404);
 	}
-	if (err.name === "TypeError") {
-		const message = `Resource not found of given id`;
-		error = new errorResponse(message, 404);
-	}
+	// if (err.name === "TypeError") {
+	// 	const message = `Resource not found of given id`;
+	// 	error = new errorResponse(message, 404);
+	// }
 	// Mongoose Duplicate key
 	if (err.code === 11000) {
 		const message = `Duplicate key Found`;
