@@ -40,6 +40,16 @@ const UserSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 	},
+	products: {
+		type: mongoose.Schema.ObjectId,
+		ref: "Product",
+	},
+});
+
+// middleware to delete products realted to this user
+UserSchema.pre("remove", async function (next) {
+	await this.model("Product").deleteMany({ seller: this._id });
+	next();
 });
 
 // User middleware to slugify the name and encrypting the password
@@ -62,5 +72,23 @@ UserSchema.methods.matchPwd = async function (enteredPwd) {
 	// this will return a promise
 	return await bcrypt.compare(enteredPwd, this.password);
 };
+
+// GeoCode and create loacation field
+// UserSchema.pre("save", async function (next) {
+// 	const loc = await geocoder.geocode(this.address);
+// 	this.location = {
+// 		type: "Point",
+// 		coordinates: [loc[0].longitude, loc[0].latitude],
+// 		formattedAddress: loc[0].formattedAddress,
+// 		city: loc[0].city,
+// 		state: loc[0].stateCode,
+// 		street: loc[0].streetName,
+// 		zipcode: loc[0].zipcode,
+// 		country: loc[0].countryCode,
+// 	};
+// 	//Do not save address
+// 	this.address = undefined;
+// 	next();
+// });
 
 module.exports = mongoose.model("User", UserSchema);

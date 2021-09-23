@@ -2,21 +2,23 @@ const Product = require("../models/Product");
 const mongoose = require("mongoose");
 const errorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
+const User = require("../models/User");
 
 exports.getProducts = asyncHandler(async (req, res, next) => {
-	const products = await Product.find();
+	res.status(200).json(res.advanceResult);
+	// const products = await Product.find();
 
-	if (!products) {
-		return next(
-			new errorResponse(`Resource not found of id ${req.params.id}`, 404),
-		);
-	} else {
-		res.status(201).json({
-			success: true,
-			count: products.length,
-			data: products,
-		});
-	}
+	// if (!products) {
+	// 	return next(
+	// 		new errorResponse(`Resource not found of id ${req.params.id}`, 404),
+	// 	);
+	// } else {
+	// 	res.status(201).json({
+	// 		success: true,
+	// 		count: products.length,
+	// 		data: products,
+	// 	});
+	// }
 });
 
 exports.createProduct = asyncHandler(async (req, res, next) => {
@@ -36,6 +38,13 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 
 	const product = await Product.create(req.body);
 
+	// Adding product to user
+	const user = User.findById(req.user.id);
+
+	user.products = product._id;
+
+	console.log(product._id);
+	console.log(user.products);
 	res.status(201).json({
 		success: true,
 		data: product,
@@ -92,7 +101,6 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 
 exports.deleteProduct = asyncHandler(async (req, res, next) => {
 	let product = await Product.findById(req.params.id);
-
 	if (!product) {
 		return next(
 			new errorResponse(`Resource not found of id ${req.params.id}`, 404),

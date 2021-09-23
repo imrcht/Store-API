@@ -20,7 +20,7 @@ connectDB();
 //Dev logging using morgan
 app.use(morgan("dev"));
 
-// using body parser
+// using body parser and cookie parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json());

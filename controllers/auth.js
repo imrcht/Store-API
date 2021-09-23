@@ -61,6 +61,20 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 	});
 });
 
+// get all users
+// Private only for admin
+exports.getUsers = asyncHandler(async (req, res, next) => {
+	if (req.user.role != "admin") {
+		return next(
+			new errorResponse(
+				`${req.user.role} is not authorized to access this route`,
+				401,
+			),
+		);
+	}
+	res.status(200).json(res.advanceResult);
+});
+
 // create and send cookie and token
 const sendTokenResponse = (user, statusCode, res) => {
 	const token = user.getSignedJwtToken();
