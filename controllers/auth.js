@@ -86,6 +86,40 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
 	});
 });
 
+// update user details
+// Private only for admin and user itself
+exports.update = asyncHandler(async (req, res, next) => {
+	let user = await User.findById(req.params.id);
+
+	if (!user) {
+		return next(
+			new errorResponse(`User with id ${req.params.id} not found`, 404),
+		);
+	}
+
+	if (req.user.role !== "admin") {
+		if (req.user.id !== req.params.id) {
+			return next(
+				new errorResponse(
+					`${req.user.name} is not allowed to update another user`,
+					401,
+				),
+			);
+		}
+	}
+
+	// Update User
+	user = await User.findByIdAndUpdate(req.params.id, req.body, {
+		runValidators: true,
+		new: true,
+	});
+
+	res.status(200).json({
+		success: true,
+		data: user,
+	});
+});
+
 // create and send cookie and token
 const sendTokenResponse = (user, statusCode, res) => {
 	const token = user.getSignedJwtToken();

@@ -2,6 +2,7 @@ const fs = require("fs");
 const mongoose = require("mongoose");
 const colors = require("colors");
 const Product = require("./models/Product.js");
+const User = require("./models/User");
 const secrets = require("./secrets");
 
 mongoose.connect(
@@ -16,10 +17,14 @@ mongoose.connect(
 const products = JSON.parse(
 	fs.readFileSync(`${__dirname}/_data/products.json`, "utf-8"),
 );
+const users = JSON.parse(
+	fs.readFileSync(`${__dirname}/_data/users.json`, "utf-8"),
+);
 
 const importData = async () => {
 	try {
 		await Product.create(products);
+		await User.create(users);
 		console.log("Data imported ....".green.inverse);
 		process.exit(0);
 	} catch (err) {
@@ -30,6 +35,7 @@ const importData = async () => {
 const deleteData = async () => {
 	try {
 		await Product.deleteMany();
+		await User.deleteMany();
 		console.log("data destroyed ...".red.inverse);
 		process.exit(0);
 	} catch (err) {

@@ -1,0 +1,52 @@
+[
+	{
+		"_id": "614c7555cacdc6d75d2297fd",
+		"name": "Rachit gupta",
+		"phone": "4562623524",
+		"email": "rachit@gmail.com",
+		"role": "admin",
+		"createdAt": "2021-09-23T12:38:45.589Z",
+		"slug": "rachit-gupta",
+		"__v": 0
+	},
+	{
+		"_id": "614591fe5d4157862a3e284b",
+		"name": "rcht",
+		"phone": "456262324",
+		"email": "rcht@gmail.com",
+		"role": "user",
+		"createdAt": "2021-09-18T07:15:10.171Z",
+		"slug": "rachit",
+		"__v": 0
+	},
+	{
+		"_id": "614591e15d4157862a3e2847",
+		"name": "ks",
+		"phone": "456262",
+		"email": "ks@gmail.com",
+		"role": "user",
+		"createdAt": "2021-09-18T07:14:41.483Z",
+		"slug": "ks",
+		"__v": 0
+	},
+	{
+		"_id": "614591c15d4157862a3e2843",
+		"name": "ks",
+		"phone": "4546132",
+		"email": "ks@gmai.com",
+		"role": "user",
+		"createdAt": "2021-09-18T07:14:09.841Z",
+		"slug": "ks",
+		"__v": 0
+	},
+	{
+		"_id": "614591675d4157862a3e283f",
+		"name": "jiomart",
+		"phone": "5412568584",
+		"email": "jiomart@gmail.com",
+		"role": "seller",
+		"createdAt": "2021-09-18T07:12:39.596Z",
+		"slug": "jiomart",
+		"__v": 0
+	}
+]

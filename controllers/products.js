@@ -39,9 +39,19 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 	const product = await Product.create(req.body);
 
 	// Adding product to user
-	const user = await User.findById(req.user.id);
+	let user = await User.findById(req.user.id);
 
-	user.products = product._id;
+	let addproducts = user.products;
+	addproducts.push(product._id);
+
+	user = await User.findByIdAndUpdate(
+		req.user.id,
+		{ products: addproducts },
+		{
+			runValidators: true,
+			new: true,
+		},
+	);
 
 	res.status(201).json({
 		success: true,

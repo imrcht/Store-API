@@ -15,6 +15,11 @@ router.get(
 	advanceResults(User, "products"),
 	control.getUsers,
 );
-router.delete("/delete/:id", protect, authorize("admin"), control.deleteUser);
+router
+	.route("/:id")
+	.delete(protect, authorize("admin"), control.deleteUser)
+	.put(protect, control.update);
+
+// router.delete("/delete/:id", protect, authorize("admin"), control.deleteUser);
 
 module.exports = router;
