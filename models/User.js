@@ -41,13 +41,14 @@ const UserSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 	products: {
-		type: mongoose.Schema.ObjectId,
+		type: [mongoose.Schema.ObjectId],
 		ref: "Product",
 	},
 });
 
 // middleware to delete products realted to this user
 UserSchema.pre("remove", async function (next) {
+	console.log("Inside remove", this._id);
 	await this.model("Product").deleteMany({ seller: this._id });
 	next();
 });

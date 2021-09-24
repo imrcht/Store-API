@@ -64,15 +64,26 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 // get all users
 // Private only for admin
 exports.getUsers = asyncHandler(async (req, res, next) => {
-	if (req.user.role != "admin") {
+	res.status(200).json(res.advanceResult);
+});
+
+// delete a user
+// Private only for admin
+exports.deleteUser = asyncHandler(async (req, res, next) => {
+	let user = User.findById(req.params.id);
+
+	if (!user) {
 		return next(
-			new errorResponse(
-				`${req.user.role} is not authorized to access this route`,
-				401,
-			),
+			new errorResponse(`User with id ${req.params.id} not found`, 404),
 		);
 	}
-	res.status(200).json(res.advanceResult);
+	user = user.remove();
+	console.log(user);
+
+	res.status(200).json({
+		success: true,
+		message: "User removed by admin",
+	});
 });
 
 // create and send cookie and token
