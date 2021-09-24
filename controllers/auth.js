@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 const errorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
+const sendEmail = require("../utils/sendEmail");
 const User = require("../models/User");
 const secrets = require("../secrets");
 
@@ -118,6 +120,74 @@ exports.update = asyncHandler(async (req, res, next) => {
 		success: true,
 		data: user,
 	});
+});
+
+// Forgot password token
+// public route
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+	const user = await User.findOne({ email: req.body.email });
+
+	if (!user) {
+		return next(
+			new errorResponse(`User with ${req.body.email} not found`, 404),
+		);
+	}
+
+	const resetPasswordToken = user.getResetPasswordToken();
+	await user.save({ validateBeforeSave: false });
+
+	resetUrl = `${req.protocol}://${req.get(
+		"host",
+	)}/api/v1/auth/resetpassword/${resetPasswordToken}`;
+	const options = {
+		message: `Your reset password url is ${resetUrl}`,
+		email: user.email,
+		subject: "Reset Password URL",
+	};
+
+	try {
+		sendEmail(options);
+		res.status(201).json({
+			success: true,
+			message: "email sent",
+		});
+	} catch (err) {
+		console.log(err);
+		user.resetPasswordToken = undefined;
+		user.resetPasswordExpire = undefined;
+
+		await user.save({ validateBeforeSave: false });
+
+		return next(new errorResponse(`Email could not be sent`, 500));
+	}
+});
+
+// reset password
+// public
+// api/v1/auth/resetpassword/:resetToken
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+	const resetPasswordToken = crypto
+		.createHash("sha1")
+		.update(req.params.resetToken)
+		.digest("hex");
+
+	const user = await User.findOne({
+		resetPasswordToken,
+		resetPasswordExpire: {
+			$gt: Date.now(),
+		},
+	});
+
+	if (!user) {
+		return next(new errorResponse(`Invalid/Expired Token `, 400));
+	}
+
+	user.password = req.body.password;
+	user.resetPasswordToken = undefined;
+	user.resetPasswordExpire = undefined;
+	user.save();
+
+	sendTokenResponse(user, 200, res);
 });
 
 // create and send cookie and token

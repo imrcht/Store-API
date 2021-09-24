@@ -20,6 +20,7 @@ router
 	.delete(protect, authorize("admin"), control.deleteUser)
 	.put(protect, control.update);
 
-// router.delete("/delete/:id", protect, authorize("admin"), control.deleteUser);
+router.post("/forgotpassword", control.forgotPassword);
+router.put("/resetpassword/:resetToken", control.resetPassword);
 
 module.exports = router;

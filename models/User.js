@@ -3,6 +3,7 @@ const slugify = require("slugify");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const secrets = require("../secrets");
+const crypto = require("crypto");
 
 const UserSchema = new mongoose.Schema({
 	name: {
@@ -55,6 +56,10 @@ UserSchema.pre("remove", async function (next) {
 
 // User middleware to slugify the name and encrypting the password
 UserSchema.pre("save", async function (next) {
+	if (!this.isModified("password")) {
+		next();
+	}
+
 	this.slug = slugify(this.name, { lower: true });
 	const salt = await bcrypt.genSalt(10);
 	this.password = await bcrypt.hash(this.password, salt);
@@ -72,6 +77,23 @@ UserSchema.methods.getSignedJwtToken = function () {
 UserSchema.methods.matchPwd = async function (enteredPwd) {
 	// this will return a promise
 	return await bcrypt.compare(enteredPwd, this.password);
+};
+
+// getresetpassword token
+UserSchema.methods.getResetPasswordToken = function () {
+	// generate token
+	let resetToken = crypto.randomBytes(20);
+	// console.log("buffer of resetpwdtoken", resetToken);
+	resetToken = resetToken.toString("hex");
+
+	this.resetPasswordToken = crypto
+		.createHash("sha1")
+		.update(resetToken)
+		.digest("hex");
+	console.log(this.resetPasswordToken);
+	this.resetPasswordExpire = Date.now() * 60 * 60;
+
+	return resetToken;
 };
 
 // GeoCode and create loacation field
