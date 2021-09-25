@@ -15,12 +15,16 @@ router.get(
 	advanceResults(User, "products"),
 	control.getUsers,
 );
+router.put("/updateme", protect, control.updateMe);
+router.put("/updatemypassword", protect, control.updateMyPassword);
+
 router
-	.route("/:id")
+	.route("/user/:id")
 	.delete(protect, authorize("admin"), control.deleteUser)
 	.put(protect, control.update);
 
 router.post("/forgotpassword", control.forgotPassword);
+
 router.put("/resetpassword/:resetToken", control.resetPassword);
 
 module.exports = router;

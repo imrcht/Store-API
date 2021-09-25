@@ -122,6 +122,36 @@ exports.update = asyncHandler(async (req, res, next) => {
 	});
 });
 
+// update loggedin user details
+// private to loggedin user
+exports.updateMe = asyncHandler(async (req, res, next) => {
+	const user = await User.findByIdAndUpdate(req.user.id, req.body, {
+		runValidators: true,
+		new: true,
+	});
+
+	res.status(200).json({
+		success: true,
+		user,
+	});
+});
+
+// update loggedin user password
+// private to loggedin user
+exports.updateMyPassword = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user.id).select("+password");
+
+	const isMatch = await user.matchPwd(req.body.currentpassword);
+	if (!isMatch) {
+		return next(new errorResponse(`Current password is incorrect`, 401));
+	}
+
+	user.password = req.body.newpassword;
+	await user.save();
+
+	sendTokenResponse(user, 200, res);
+});
+
 // Forgot password token
 // public route
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
