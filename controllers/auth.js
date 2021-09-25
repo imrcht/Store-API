@@ -4,6 +4,7 @@ const errorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const sendEmail = require("../utils/sendEmail");
 const User = require("../models/User");
+const Product = require("../models/Product");
 const secrets = require("../secrets");
 
 // Register User post api/v1/auth/register
@@ -68,7 +69,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 
 	res.status(201).json({
 		success: true,
-		message: `${user.role} with ${user.name} created successfully`,
+		message: `${user.role} of name ${user.name} created successfully`,
 	});
 });
 
@@ -109,19 +110,21 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 // delete a user
 // Private only for admin
 exports.deleteUser = asyncHandler(async (req, res, next) => {
-	let user = User.findById(req.params.id);
+	let user = await User.findById(req.params.id);
 
 	if (!user) {
 		return next(
 			new errorResponse(`User with id ${req.params.id} not found`, 404),
 		);
 	}
+	const userRole = user.role;
+	const username = user.name;
 	user = user.remove();
 	console.log(user);
 
 	res.status(200).json({
 		success: true,
-		message: "User removed by admin",
+		message: `${username} of role ${userRole} removed by Admin`,
 	});
 });
 
@@ -219,12 +222,11 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 			message: "email sent",
 		});
 	} catch (err) {
-		console.log(err);
 		user.resetPasswordToken = undefined;
 		user.resetPasswordExpire = undefined;
 
 		await user.save({ validateBeforeSave: false });
-
+		console.log(err);
 		return next(new errorResponse(`Email could not be sent`, 500));
 	}
 });
@@ -268,11 +270,21 @@ const sendTokenResponse = (user, statusCode, res) => {
 		httpOnly: true,
 	};
 
-	res.status(statusCode)
-		.cookie("token", token, options)
-		.json({
-			success: true,
-			token: token,
-			message: `${user.email} sucesss full `,
-		});
+	if (user.role === "admin") {
+		res.status(statusCode)
+			.cookie("token", token, options)
+			.json({
+				success: true,
+				token: token,
+				message: `Our Admin The ${user.name} has arrived `,
+			});
+	} else {
+		res.status(statusCode)
+			.cookie("token", token, options)
+			.json({
+				success: true,
+				token: token,
+				message: `${user.email} sucesss full `,
+			});
+	}
 };

@@ -49,7 +49,6 @@ const UserSchema = new mongoose.Schema({
 
 // middleware to delete products realted to this user
 UserSchema.pre("remove", async function (next) {
-	console.log("Inside remove", this._id);
 	await this.model("Product").deleteMany({ seller: this._id });
 	next();
 });
