@@ -18,6 +18,8 @@ router.get(
 router.put("/updateme", protect, control.updateMe);
 router.put("/updatemypassword", protect, control.updateMyPassword);
 
+router.post("/user", protect, authorize("admin"), control.createUser);
+
 router
 	.route("/user/:id")
 	.delete(protect, authorize("admin"), control.deleteUser)
