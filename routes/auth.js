@@ -21,7 +21,8 @@ router.put("/updatemypassword", protect, control.updateMyPassword);
 router
 	.route("/user/:id")
 	.delete(protect, authorize("admin"), control.deleteUser)
-	.put(protect, control.update);
+	.put(protect, authorize("admin"), control.update)
+	.get(protect, authorize("admin"), control.getUser);
 
 router.post("/forgotpassword", control.forgotPassword);
 

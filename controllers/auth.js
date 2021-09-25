@@ -69,6 +69,23 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
 	res.status(200).json(res.advanceResult);
 });
 
+// get single user
+// Private only for admin
+exports.getUser = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.params.id);
+
+	if (!user) {
+		return next(
+			new errorResponse(`User with ${req.params.id} not found`, 404),
+		);
+	}
+
+	res.status(200).json({
+		success: true,
+		user,
+	});
+});
+
 // delete a user
 // Private only for admin
 exports.deleteUser = asyncHandler(async (req, res, next) => {
