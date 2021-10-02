@@ -7,6 +7,7 @@ const User = require("../models/User");
 
 router.post("/register", control.register);
 router.post("/login", control.login);
+router.get("/logout", protect, control.logout);
 router.get("/me", protect, control.getMe);
 router.get(
 	"/users",

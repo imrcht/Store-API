@@ -4,6 +4,9 @@ const connectDB = require("./config/db");
 const colors = require("colors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
+const xss = require("xss-clean");
 // Routes from products
 const products = require("./routes/products");
 // Routes from Auth
@@ -26,6 +29,15 @@ app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json());
+
+// Set Security headers
+app.use(helmet());
+
+// prevent xss attacks
+app.use(xss());
+
+// sanitize everything Protext from noSQL injection
+app.use(mongoSanitize());
 
 // Mount routes
 app.use("/api/v1/products", products);
