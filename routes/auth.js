@@ -19,6 +19,7 @@ router.get(
 	}),
 	control.getUsers,
 );
+
 router.put("/updateme", protect, control.updateMe);
 router.put("/updatemypassword", protect, control.updateMyPassword);
 

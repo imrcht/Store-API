@@ -4,9 +4,9 @@ const User = require("../models/User");
 const errorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 
-// Public
-// GET api/v1/products/:productId/reviews - get specific product reviews
-// GET api/v1/reviews - get all reviews
+// @desc	 	Get specific product reviews OR Get all reviews
+// @route	 	GET api/v1/products/:productId/reviews OR GET api/v1/reviews
+// @access		Public
 exports.getReviews = asyncHandler(async (req, res, next) => {
 	if (req.params.productId) {
 		const reviews = await Review.find({ product: req.params.productId });
@@ -21,8 +21,9 @@ exports.getReviews = asyncHandler(async (req, res, next) => {
 	}
 });
 
-// Public
-// GET api/v1/reviews/:id  get a single review
+// @desc	 	Get a single review
+// @route	 	GET api/v1/reviews/:id
+// @access		Public
 exports.getReview = asyncHandler(async (req, res, next) => {
 	const review = await Review.findById(req.params.id).populate({
 		path: "product",
@@ -41,8 +42,9 @@ exports.getReview = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// Private only for users and admin
-// POST api/v1/products/:productId/reviews - get specific product reviews
+// @desc	 	Write specific product reviews
+// @route	 	POST api/v1/products/:productId/reviews
+// @access		Private to users and admin
 exports.createReview = asyncHandler(async (req, res, next) => {
 	let product = await Product.findById(req.params.productId);
 
@@ -96,8 +98,9 @@ exports.createReview = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// Private to user and admin
-// PUT api/v1/reviews/:id  get a single review
+// @desc	 	Update review
+// @route	 	PUT api/v1/reviews/:id
+// @access		Private to review writer and admin
 exports.updateReview = asyncHandler(async (req, res, next) => {
 	let review = await Review.findById(req.params.id);
 
@@ -127,9 +130,9 @@ exports.updateReview = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// delete a review
-// Private only for user and admin
-// DELETE api/v1/reviews/:id
+// @desc	 	Delete review
+// @route	 	DELETE api/v1/reviews/:id
+// @access		Private to review writer and admin
 exports.deleteReview = asyncHandler(async (req, res, next) => {
 	let review = await Review.findById(req.params.id);
 

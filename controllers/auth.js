@@ -7,7 +7,9 @@ const User = require("../models/User");
 const Product = require("../models/Product");
 const secrets = require("../secrets");
 
-// Register User post api/v1/auth/register
+// @desc 	Register User
+// @route 	POST api/v1/auth/register
+// @access	Public
 exports.register = asyncHandler(async (req, res, next) => {
 	const { name, email, phone, password, role } = req.body;
 
@@ -24,7 +26,9 @@ exports.register = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(user, 201, res);
 });
 
-// Login User post api/v1/auth/login
+// @desc 	Login User
+// @route 	POST api/v1/auth/login
+// @access	Public
 exports.login = asyncHandler(async (req, res, next) => {
 	const { email, password } = req.body;
 
@@ -53,9 +57,9 @@ exports.login = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(user, 200, res);
 });
 
-// Logout user
-// api/v1/auth/logout
-// private
+// @desc 	Logout User
+// @route 	GET api/v1/auth/logout
+// @access	Private
 exports.logout = asyncHandler(async (req, res, next) => {
 	res.cookie("token", "none", {
 		expires: new Date(Date.now() + 10 * 1000),
@@ -67,8 +71,9 @@ exports.logout = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// Create User post api/v1/auth/user
-// private for admin
+// @desc 	Create User
+// @route 	POST api/v1/auth/user
+// @access	Private to Admin
 exports.createUser = asyncHandler(async (req, res, next) => {
 	const { name, email, phone, password, role } = req.body;
 
@@ -87,8 +92,9 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// get loggedin user
-// private
+// @desc 	User details
+// @route 	GET api/v1/auth/me
+// @access	Private
 exports.getMe = asyncHandler(async (req, res, next) => {
 	const user = await User.findById(req.user.id);
 
@@ -98,14 +104,16 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// get all users
-// Private only for admin
+// @desc 	Get all User
+// @route 	GET api/v1/auth/users
+// @access	Private to Admin
 exports.getUsers = asyncHandler(async (req, res, next) => {
 	res.status(200).json(res.advanceResult);
 });
 
-// get single user
-// Private only for admin
+// @desc 	Get single User
+// @route 	GET api/v1/auth/user/:id
+// @access	Private to Admin
 exports.getUser = asyncHandler(async (req, res, next) => {
 	const user = await User.findById(req.params.id);
 
@@ -121,8 +129,9 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// delete a user
-// Private only for admin
+// @desc 	Delete single User
+// @route 	DELETE api/v1/auth/user/:id
+// @access	Private to Admin
 exports.deleteUser = asyncHandler(async (req, res, next) => {
 	let user = await User.findById(req.params.id);
 
@@ -142,8 +151,9 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// update user details
-// Private only for admin and user itself
+// @desc 	Update user details
+// @route 	PUT api/v1/auth/user/:id
+// @access	Private to Admin
 exports.update = asyncHandler(async (req, res, next) => {
 	let user = await User.findById(req.params.id);
 
@@ -176,8 +186,9 @@ exports.update = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// update loggedin user details
-// private to loggedin user
+// @desc 	Update User details
+// @route 	PUT api/v1/auth/updateme
+// @access	Private to User itself
 exports.updateMe = asyncHandler(async (req, res, next) => {
 	const user = await User.findByIdAndUpdate(req.user.id, req.body, {
 		runValidators: true,
@@ -190,8 +201,9 @@ exports.updateMe = asyncHandler(async (req, res, next) => {
 	});
 });
 
-// update loggedin user password
-// private to loggedin user
+// @desc 	Update User Password
+// @route 	PUT api/v1/auth/usermypassword
+// @access	Private to User itself
 exports.updateMyPassword = asyncHandler(async (req, res, next) => {
 	const user = await User.findById(req.user.id).select("+password");
 
@@ -206,8 +218,9 @@ exports.updateMyPassword = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(user, 200, res);
 });
 
-// Forgot password token
-// public route
+// @desc 	Generate Forgot Password token
+// @route 	POST api/v1/auth/forgotpassword
+// @access	Public
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
 	const user = await User.findOne({ email: req.body.email });
 
@@ -245,9 +258,9 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 	}
 });
 
-// reset password
-// public
-// api/v1/auth/resetpassword/:resetToken
+// @desc 	Reset Password link
+// @route 	PUT api/v1/auth/resetpassword/:resetToken
+// @access	Public
 exports.resetPassword = asyncHandler(async (req, res, next) => {
 	const resetPasswordToken = crypto
 		.createHash("sha1")

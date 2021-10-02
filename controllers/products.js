@@ -4,10 +4,16 @@ const errorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const User = require("../models/User");
 
+// @desc 	Get all products
+// @route 	GET api/v1/products
+// @access	Public
 exports.getProducts = asyncHandler(async (req, res, next) => {
 	res.status(200).json(res.advanceResult);
 });
 
+// @desc 	List product
+// @route 	POST api/v1/products
+// @access	Private to seller and Admin
 exports.createProduct = asyncHandler(async (req, res, next) => {
 	// Add user to body
 	req.body.seller = req.user.id;
@@ -46,9 +52,12 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 	});
 });
 
+// @desc 	Get single product
+// @route 	GET api/v1/product
+// @access	Public
 exports.getProduct = asyncHandler(async (req, res, next) => {
 	const product = await Product.findById(req.params.id);
-	console.log(req.params.id);
+
 	if (!product) {
 		return next(
 			new errorResponse(`Resource not found of id ${req.params.id}`, 404),
@@ -61,6 +70,9 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 	}
 });
 
+// @desc 	Udpate product
+// @route 	PUT api/v1/product/:id
+// @access	Private to Admin and product seller
 exports.updateProduct = asyncHandler(async (req, res, next) => {
 	let product = await Product.findById(req.params.id);
 
@@ -94,6 +106,9 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 	});
 });
 
+// @desc 	Delete product
+// @route 	DELETE api/v1/product/:id
+// @access	Private to Admin and product seller
 exports.deleteProduct = asyncHandler(async (req, res, next) => {
 	let product = await Product.findById(req.params.id);
 	if (!product) {
