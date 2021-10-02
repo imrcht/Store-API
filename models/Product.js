@@ -42,6 +42,10 @@ const ProductSchema = new mongoose.Schema({
 		trim: true,
 		maxlength: [50, "Seller name cannot be more than of 50 characters"],
 	},
+	reviews: {
+		type: [mongoose.Schema.ObjectId],
+		ref: "Review",
+	},
 });
 
 // Product middleware to slugify the title

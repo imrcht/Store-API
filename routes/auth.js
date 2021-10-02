@@ -12,7 +12,10 @@ router.get(
 	"/users",
 	protect,
 	authorize("admin"),
-	advanceResults(User, "products"),
+	advanceResults(User, {
+		path: "products",
+		select: "title productType cost photo",
+	}),
 	control.getUsers,
 );
 router.put("/updateme", protect, control.updateMe);

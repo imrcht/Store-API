@@ -45,6 +45,10 @@ const UserSchema = new mongoose.Schema({
 		type: [mongoose.Schema.ObjectId],
 		ref: "Product",
 	},
+	reviews: {
+		type: [mongoose.Schema.ObjectId],
+		ref: "Review",
+	},
 });
 
 // middleware to delete products realted to this user

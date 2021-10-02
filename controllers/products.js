@@ -6,19 +6,6 @@ const User = require("../models/User");
 
 exports.getProducts = asyncHandler(async (req, res, next) => {
 	res.status(200).json(res.advanceResult);
-	// const products = await Product.find();
-
-	// if (!products) {
-	// 	return next(
-	// 		new errorResponse(`Resource not found of id ${req.params.id}`, 404),
-	// 	);
-	// } else {
-	// 	res.status(201).json({
-	// 		success: true,
-	// 		count: products.length,
-	// 		data: products,
-	// 	});
-	// }
 });
 
 exports.createProduct = asyncHandler(async (req, res, next) => {

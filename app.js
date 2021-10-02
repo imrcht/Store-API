@@ -8,6 +8,8 @@ const cookieParser = require("cookie-parser");
 const products = require("./routes/products");
 // Routes from Auth
 const auth = require("./routes/auth");
+// Routes from review
+const reviews = require("./routes/reviews");
 // Middleware
 const errorHandler = require("./middleware/error");
 
@@ -28,6 +30,7 @@ app.use(express.json());
 // Mount routes
 app.use("/api/v1/products", products);
 app.use("/api/v1/auth", auth);
+app.use("/api/v1/reviews", reviews);
 
 // Using Middleware
 app.use(errorHandler);

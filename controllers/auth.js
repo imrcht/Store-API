@@ -120,7 +120,7 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
 	const userRole = user.role;
 	const username = user.name;
 	user = user.remove();
-	console.log(user);
+	// console.log(user);
 
 	res.status(200).json({
 		success: true,
