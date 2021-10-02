@@ -7,6 +7,9 @@ const cookieParser = require("cookie-parser");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const xss = require("xss-clean");
+const expressRateLimit = require("express-rate-limit");
+const hpp = require("hpp");
+const cors = require("cors");
 // Routes from products
 const products = require("./routes/products");
 // Routes from Auth
@@ -38,6 +41,19 @@ app.use(xss());
 
 // sanitize everything Protext from noSQL injection
 app.use(mongoSanitize());
+
+// Rate limit 100 requests per 10 minutes
+const limiter = expressRateLimit({
+	windowMs: 10 * 60 * 1000, // 10 minutes
+	max: 100, // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// prevent http params pollution attack
+app.use(hpp());
+
+// Using CORS middleware to allow other domains to use our resources
+app.use(cors());
 
 // Mount routes
 app.use("/api/v1/products", products);
