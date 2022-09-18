@@ -1,8 +1,9 @@
-const Product = require("../models/Product");
-const mongoose = require("mongoose");
-const errorResponse = require("../utils/errorResponse");
-const asyncHandler = require("../middleware/async");
-const User = require("../models/User");
+const Product = require('../models/Product');
+const mongoose = require('mongoose');
+const errorResponse = require('../utils/errorResponse');
+const asyncHandler = require('../middleware/async');
+const User = require('../models/User');
+const Razorpay = require('razorpay');
 
 // @desc 	Get all products
 // @route 	GET api/v1/products
@@ -21,10 +22,11 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 	// check for listed product
 	const listedProduct = await Product.find({ user: req.user.id });
 
-	if (listedProduct.length === 10 && req.user.role != "admin") {
+	if (listedProduct.length === 10 && req.user.role != 'admin') {
 		return next(
 			new errorResponse(
 				`The user with name ${req.user.name} has already listed 10 products`,
+				400,
 			),
 		);
 	}
@@ -82,10 +84,7 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 		);
 	}
 	// making sure that only the product seller or admin can update product details
-	if (
-		product.seller.toString() !== req.user.id &&
-		req.user.role !== "admin"
-	) {
+	if (product.seller.toString() !== req.user.id && req.user.role !== 'admin') {
 		return next(
 			new errorResponse(
 				`${req.user.name} is not allowed to update this product details`,
@@ -117,10 +116,7 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
 		);
 	}
 	// making sure that only the product seller or admin can delete product details
-	if (
-		product.seller.toString() !== req.user.id &&
-		req.user.role !== "admin"
-	) {
+	if (product.seller.toString() !== req.user.id && req.user.role !== 'admin') {
 		return next(
 			new errorResponse(
 				`${req.user.name} is not allowed to delete this product details`,
